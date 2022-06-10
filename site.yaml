@@ -1,0 +1,104 @@
+- hosts: webservers
+  tasks:
+  - name: apt-update
+    become: yes
+    apt: 
+       update_cache: yes
+
+  - name: apt-install pip
+    become: yes
+    apt:
+      name: python3-pip
+
+  - name: installing flask
+    become: yes
+    pip:
+       name: flask
+
+  - name: installing gunicorn
+    become: yes
+    pip:
+      name: gunicorn
+
+  - name: Installing snmpd
+    become: yes
+    apt:
+      name: snmpd
+
+  - name: binary files copy snmpd
+    become: yes
+    copy:
+     src: ./snmp
+     dest: /etc/snmp/snmpd.conf
+
+  - name: Restarting snmpd 
+    become: yes
+    ansible.builtin.service:
+     name: snmpd
+     state: restarted
+
+
+  - name: Executing Application 
+    file: 
+      state: absent
+      path: /home/ubuntu/app2.py
+
+  - name: copy application2.py
+    copy:
+    # become: yes
+     src: ./application2.py
+     dest: ~/app.py
+
+  - name: transplant gunirun
+    copy:
+     src: ./gunirun.sh
+     dest: ~/gunirun.sh
+
+  - name: Change PWD to another path
+    become: yes
+    shell: bash /home/ubuntu/gunirun.sh 
+    
+  
+
+
+
+- hosts: HAproxy
+  tasks:
+  - name: apt-update cache
+    become: yes
+    apt: 
+       update_cache: yes
+
+  - name: Installing HAProxy
+    become: yes
+    apt:
+      name: haproxy
+
+  - name: Haproxy config template
+    become: yes
+    template:
+     src: ./HAproxy_config
+     dest: /etc/haproxy/haproxy.cfg
+
+  - name: installing nginx
+    become: yes
+    apt:
+      name: nginx
+
+  - name: installing nginx configurations
+    become: yes
+    template:
+     src: ./nginx.conf
+     dest: /etc/nginx/nginx.conf
+
+  - name: nginx restart
+    become: yes
+    ansible.builtin.service:
+     name: nginx
+     state: restarted
+ 
+  - name: haproxy restart
+    become: yes
+    ansible.builtin.service:
+     name: haproxy
+     state: restarted
