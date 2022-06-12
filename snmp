@@ -78,7 +78,6 @@ rocommunity6 public default -V systemonly
 # createUser username (MD5|SHA|SHA-512|SHA-384|SHA-256|SHA-224) authpassphrase [DES|AES] [privpassphrase]
 # e.g.
 # createuser authPrivUser SHA-512 myauthphrase AES myprivphrase
-#
 # This should be put into /var/lib/snmp/snmpd.conf 
 #
 # rouser: a SNMPv3 read-only access username
